@@ -1,0 +1,8 @@
+{
+  "EventName" : "Test event",
+	"VenueName" : "Test venue",
+	"VenueLocation" : "Test venue location",
+	"StartTime" : "utc-time",
+	"EndTime" : "utc-time2",
+	"Description" : "Looong event description, trust me"
+}
