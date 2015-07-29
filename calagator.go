@@ -131,16 +131,20 @@ func sendEventToCalagator(eventEntry event, token string) {
 	// To do a test event, use the "preview" input.
 	log.Println("Sending to calagator with auth token ", token)
 
-	resp, err := http.PostForm("http://calagator.org/events", makePostFormValues(eventEntry, token))
-	defer resp.Body.Close()
-	if err != nil {
-		log.Fatalln("Fatal error posting form: ", err)
-	}
-	// body, err := ioutil.ReadAll(resp.Body)
-	// log.Print(string(body))
-	if resp.StatusCode == 200 || resp.StatusCode == 302 {
-		log.Println("We totally posted to calagator, got ", resp.Status)
+	if productionMode {
+		resp, err := http.PostForm("http://calagator.org/events", makePostFormValues(eventEntry, token))
+		defer resp.Body.Close()
+		if err != nil {
+			log.Fatalln("Fatal error posting form: ", err)
+		}
+		// body, err := ioutil.ReadAll(resp.Body)
+		// log.Print(string(body))
+		if resp.StatusCode == 200 || resp.StatusCode == 302 {
+			log.Println("We totally posted to calagator, got ", resp.Status)
+		} else {
+			log.Println("Didn't get a 200 or 302 back.  Got: ", resp.Status)
+		}
 	} else {
-		log.Println("Didn't get a 200 or 302 back.  Got: ", resp.Status)
+		log.Println("Production mode not enabled, not sending to Calagator.")
 	}
 }

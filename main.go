@@ -17,6 +17,8 @@ type event struct {
 	Description   string `json:"Description"`
 }
 
+var productionMode bool
+
 func main() {
 	log.Println("Starting up easy-megaphone")
 
@@ -36,6 +38,7 @@ func main() {
 
 func setup() {
 	// envconfig bits for various integration, such as Meetups API
+	productionMode = false
 }
 
 func getDateFromDateTime(dateTime string) string {
