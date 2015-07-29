@@ -102,6 +102,9 @@ func getCalagatorAuthToken() (token string) {
 // trap_field:
 // preview:Preview
 
+// For create: no preview tag, but:
+// commit:Create Event
+
 func makePostFormValues(eventEntry event, authToken string) (values url.Values) {
 	vals := url.Values{}
 
@@ -118,7 +121,8 @@ func makePostFormValues(eventEntry event, authToken string) (values url.Values) 
 	vals.Set("event[venue_details]", "")
 	vals.Set("event[tag_list]", "testertag")
 	vals.Set("trap_field", "")
-	vals.Set("preview", "Preview")
+	vals.Set("commit", "Create Event")
+	// vals.Set("preview", "Preview")
 
 	return vals
 }
@@ -132,10 +136,11 @@ func sendEventToCalagator(eventEntry event, token string) {
 	if err != nil {
 		log.Fatalln("Fatal error posting form: ", err)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	log.Print(string(body))
-	if resp.StatusCode != 200 {
-		log.Fatalln("Oops got status code ", resp.Status)
+	// body, err := ioutil.ReadAll(resp.Body)
+	// log.Print(string(body))
+	if resp.StatusCode == 200 || resp.StatusCode == 302 {
+		log.Println("We totally posted to calagator, got ", resp.Status)
+	} else {
+		log.Println("Didn't get a 200 or 302 back.  Got: ", resp.Status)
 	}
-	log.Println("We totally posted to calagator, got a 200 back.")
 }
