@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 // TODO: whole twitter post as a field?
@@ -35,6 +36,16 @@ func main() {
 
 func setup() {
 	// envconfig bits for various integration, such as Meetups API
+}
+
+func getDateFromDateTime(dateTime string) string {
+	date := strings.Split(dateTime, "|")[0]
+	return date
+}
+
+func getTimeFromDateTime(dateTime string) string {
+	time := strings.Split(dateTime, "|")[1]
+	return time
 }
 
 func readFileContents(file string) ([]byte, error) {

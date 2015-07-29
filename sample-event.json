@@ -2,7 +2,7 @@
   "EventName" : "Test event",
 	"VenueName" : "Test venue",
 	"VenueLocation" : "Test venue location",
-	"StartTime" : "utc-time",
-	"EndTime" : "utc-time2",
+	"StartTime" : "2015-07-26|8:00 PM",
+	"EndTime" : "2015-07-26|9:00 PM",
 	"Description" : "Looong event description, trust me"
 }
