@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// TODO: whole twitter post?
+// TODO: whole twitter post as a field?
 type event struct {
 	EventName     string `json:"EventName"`
 	VenueName     string `json:"VenueName"`
@@ -55,12 +55,6 @@ func readFromJSON(eventJSON []byte) event {
 		log.Fatal("Couldn't parse JSON file.")
 	}
 	return eventEntry
-}
-
-func sendToCalagator(eventEntry event) {
-	log.Println("Totally sending to calagator...")
-	bleh, _ := json.Marshal(eventEntry)
-	log.Println(string(bleh))
 }
 
 func sendToMeetup(eventEntry event) {
