@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,8 +11,8 @@ import (
 
 func sendToCalagator(eventEntry event) {
 	log.Println("Getting read to send to calagator.")
-	bleh, _ := json.Marshal(eventEntry)
-	log.Println(string(bleh))
+	// bleh, _ := json.Marshal(eventEntry)
+	// log.Println(string(bleh))
 
 	token := getCalagatorAuthToken()
 

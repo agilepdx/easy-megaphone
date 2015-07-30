@@ -36,7 +36,7 @@ func main() {
 }
 
 func setup() {
-	// envconfig bits for various integration, such as Meetups API
+	// envconfig bits for various integration, such as Meetups API token
 	productionMode = false
 }
 

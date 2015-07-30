@@ -60,7 +60,7 @@ func readFromJSON(eventJSON []byte) event {
 	err := json.Unmarshal([]byte(eventJSON), &eventEntry)
 
 	if err != nil {
-		log.Fatal("Couldn't parse JSON file.")
+		log.Fatal("Couldn't parse JSON file: ", err)
 	}
 	return eventEntry
 }
