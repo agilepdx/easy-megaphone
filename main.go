@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/kelseyhightower/envconfig"
 	"log"
 )
 
@@ -15,7 +16,14 @@ type event struct {
 	Description   string `json:"Description"`
 }
 
-var productionMode bool
+type specification struct {
+	GitHubToken string
+}
+
+var (
+	productionMode bool
+	s              specification
+)
 
 func main() {
 	log.Println("Starting up easy-megaphone")
@@ -42,6 +50,13 @@ func main() {
 func setup() {
 	// envconfig bits for various integration, such as Meetups API token
 	productionMode = false
+
+	err := envconfig.Process("easymegaphone", &s)
+	if err != nil {
+		log.Fatal("boo: ", err.Error())
+	}
+
+	log.Println("github token is " + s.GitHubToken)
 }
 
 func sendToMeetup(eventEntry event) {

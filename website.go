@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -32,8 +34,8 @@ func createCommitOnBranch() {
 	if cmdOut, err = exec.Command(cmd, args...).Output(); err != nil {
 		log.Fatal("Couldn't run git: ", os.Stderr, err)
 	}
-	log.Println("git output: ", string(cmdOut))
-	// TODO: change this to agilepdx/agilepdx.github.io
+	// log.Println("git remote output: ", string(cmdOut))
+
 	if strings.Contains(string(cmdOut), "git@github.com:agilepdx/agilepdx.github.io") {
 		log.Println("We're in the right spot.")
 	}
@@ -65,7 +67,7 @@ func createCommitOnBranch() {
 	if err != nil {
 		log.Println("Couldn't open index.html: ", err)
 	}
-	_, err = f.WriteString("FOOO")
+	_, err = f.WriteString("<!-- test -->")
 	if err != nil {
 		log.Println("Couldn't write to index.html: ", err)
 	}
@@ -92,7 +94,21 @@ func createCommitOnBranch() {
 	}
 
 	// create pull request via github API
-	// ~magick~
+	log.Println("Talking to the hub of gits")
+	pullRequestPayload := []byte(fmt.Sprintf(`{"title":"easy-megaphone automated updated",
+    "body" : "Automatic pull request on behalf of easy-megaphone.", "head" : "%v" , "base" : "master"}`, branchName))
+
+	// curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "https://api.github.com/repos/agilepdx/agilepdx.github.io/pulls", bytes.NewBuffer(pullRequestPayload))
+	req.Header.Add("Authorization", "token "+s.GitHubToken)
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Fatalln("Blew up asking github to make a PR.")
+	}
+
+	log.Println("response from github: ", resp)
 
 	// accept PR via GH API
 
