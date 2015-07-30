@@ -21,7 +21,11 @@ func main() {
 	log.Println("Starting up easy-megaphone")
 
 	setup()
-
+	if productionMode {
+		log.Println("We're in production mode, gonna send real events.")
+	} else {
+		log.Println("We're in DEBUG mode, not sending real requests.")
+	}
 	// TODO: take in a flag with a file to post.
 	eventEntry, err := fileToEvent("sample-event.json")
 	if err != nil {
@@ -29,7 +33,7 @@ func main() {
 	}
 
 	// These can be refactored into a single function that calls them all
-	sendToCalagator(eventEntry)
+	//sendToCalagator(eventEntry)
 	sendToMeetup(eventEntry)
 	sendToAgilePDXWebsite(eventEntry)
 	sendToTwitter(eventEntry)
@@ -42,10 +46,6 @@ func setup() {
 
 func sendToMeetup(eventEntry event) {
 	log.Println("Totally sending to meetup...")
-}
-
-func sendToAgilePDXWebsite(eventEntry event) {
-	log.Println("Totally sending to agilepdx website...")
 }
 
 func sendToTwitter(eventEntry event) {
