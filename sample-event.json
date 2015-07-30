@@ -1,8 +1,9 @@
 {
-  "EventName" : "Test event",
-	"VenueName" : "Test venue",
+  "EventName" : "AgilePDX Dntn Pub Lunch: Making the Business and Technical Case for Pair Programming and TDD test",
+	"VenueName" : "McMenamins Ringlers Pub",
 	"VenueLocation" : "Test venue location",
+  "VenueDetails" : "",
 	"StartTime" : "2015-07-26|8:00 PM",
 	"EndTime" : "2015-07-26|9:00 PM",
-	"Description" : "Looong event description, trust me"
+	"Description" : "This June Cotten Blackwell's Agile team started a 3-month pilot adoption of pair programming and TDD – almost exactly as practiced during Coderetreats (http://coderetreat.org/facilitating/structure-of-a-coderetreat), which they used to kick off their pilot and can’t recommend strongly enough. \n\nSo exactly how did they get management and team approval (and active support) for TDD/pair programming?\n\nWell, they are definitely blessed with Product Managers (and Directors) who are very big-picture, and highly open to persuasive business cases grounded in data and metrics.  But, they think that *how* they made the business and technical case for pair programming and TDD is worth sharing – and that much of it might be highly applicable to *your* team.\n\nBio:\n\nCotten Blackwell is an engineering manager, Agile champion and Swift developer with over 15 years experience leading, coaching and mentoring software development teams.  For the last four years he’s been doing that at Huron Consulting Group, where he’s known for his focus on improving team health and employee development and retention.  Cotten has driven continuous improvements in Huron’s mastery of Agile and Lean Startup fundamentals, and has leveraged multiple software teams to more consistently, more deeply engage in risk identification, analysis and mitigation.\n\nRSVP's to jean@azuregate.net very welcome but not required."
 }

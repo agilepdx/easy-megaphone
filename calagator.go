@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,8 +11,8 @@ import (
 
 func sendToCalagator(eventEntry event) {
 	log.Println("Getting read to send to calagator.")
-	bleh, _ := json.Marshal(eventEntry)
-	log.Println(string(bleh))
+	// bleh, _ := json.Marshal(eventEntry)
+	// log.Println(string(bleh))
 
 	token := getCalagatorAuthToken()
 
@@ -102,9 +101,6 @@ func getCalagatorAuthToken() (token string) {
 // trap_field:
 // preview:Preview
 
-// For create: no preview tag, but:
-// commit:Create Event
-
 func makePostFormValues(eventEntry event, authToken string) (values url.Values) {
 	vals := url.Values{}
 
@@ -116,35 +112,34 @@ func makePostFormValues(eventEntry event, authToken string) (values url.Values) 
 	vals.Set("start_time", getTimeFromDateTime(eventEntry.StartTime)) // 8:00 PM
 	vals.Set("end_date", getDateFromDateTime(eventEntry.EndTime))
 	vals.Set("end_time", getTimeFromDateTime(eventEntry.EndTime))
-	vals.Set("event[url]", "")
+	vals.Set("event[url]", "http://www.agilepdx.org")
 	vals.Set("event[description]", eventEntry.Description)
-	vals.Set("event[venue_details]", "")
-	vals.Set("event[tag_list]", "testertag")
+	vals.Set("event[venue_details]", eventEntry.VenueDetails)
+	vals.Set("event[tag_list]", "agile, agilepdx, collocated teams, cross functional teams, users sitting together")
 	vals.Set("trap_field", "")
-	vals.Set("commit", "Create Event")
-	// vals.Set("preview", "Preview")
-
+	if productionMode {
+		vals.Set("commit", "Create Event")
+	} else {
+		vals.Set("preview", "Preview")
+	}
 	return vals
 }
 
 func sendEventToCalagator(eventEntry event, token string) {
-	// To do a test event, use the "preview" input.
-	log.Println("Sending to calagator with auth token ", token)
+	log.Println("Sending to calagator")
 
-	if productionMode {
-		resp, err := http.PostForm("http://calagator.org/events", makePostFormValues(eventEntry, token))
-		defer resp.Body.Close()
-		if err != nil {
-			log.Fatalln("Fatal error posting form: ", err)
-		}
-		// body, err := ioutil.ReadAll(resp.Body)
-		// log.Print(string(body))
-		if resp.StatusCode == 200 || resp.StatusCode == 302 {
-			log.Println("We totally posted to calagator, got ", resp.Status)
-		} else {
-			log.Println("Didn't get a 200 or 302 back.  Got: ", resp.Status)
-		}
+	resp, err := http.PostForm("http://calagator.org/events", makePostFormValues(eventEntry, token))
+	defer resp.Body.Close()
+	if err != nil {
+		log.Fatalln("Fatal error posting form: ", err)
+	}
+	// body, err := ioutil.ReadAll(resp.Body)
+	// log.Print(string(body))
+	if resp.StatusCode == 200 || resp.StatusCode == 302 {
+		// 200 means the non-productionMode request succeeded
+		// 302 means the productionMode request made a new event on calagator
+		log.Println("We posted to calagator, got ", resp.Status)
 	} else {
-		log.Println("Production mode not enabled, not sending to Calagator.")
+		log.Println("Didn't get a 200 or 302 back.  Got: ", resp.Status)
 	}
 }
