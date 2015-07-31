@@ -2,22 +2,29 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
 
+type githubPullRequestResponse struct {
+	RequestNumber int `json:"number"`
+}
+
 func sendToAgilePDXWebsite(eventEntry event) {
 	log.Println("Totally sending to agilepdx website...")
-	createCommitOnBranch()
+	createCommitOnBranch(eventEntry)
 }
 
 // https://developer.github.com/v3/
-func createCommitOnBranch() {
+func createCommitOnBranch(eventEntry event) {
 	// verify we're in the right repo
 	var cmdOut []byte
 	var err error
@@ -63,6 +70,8 @@ func createCommitOnBranch() {
 	}
 
 	// update web site index.html with new event
+	updateEventsListing(eventEntry)
+	// but for testing:
 	f, err := os.OpenFile(websiteDir+"/index.html", os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModeAppend)
 	if err != nil {
 		log.Println("Couldn't open index.html: ", err)
@@ -103,6 +112,7 @@ func createCommitOnBranch() {
 	req, err := http.NewRequest("POST", "https://api.github.com/repos/agilepdx/agilepdx.github.io/pulls", bytes.NewBuffer(pullRequestPayload))
 	req.Header.Add("Authorization", "token "+s.GitHubToken)
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 
 	if err != nil {
 		log.Fatalln("Blew up asking github to make a PR.")
@@ -110,7 +120,44 @@ func createCommitOnBranch() {
 
 	log.Println("response from github: ", resp)
 
+	var gitHubPullRequest githubPullRequestResponse
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Couldn't read response json: ", err)
+	}
+	err = json.Unmarshal(respBody, &gitHubPullRequest)
+	if err != nil {
+		log.Println("Couldn't parse response json: ", err)
+	}
+
 	// accept PR via GH API
+	// PUT /repos/:owner/:repo/pulls/:number/merge
+	time.Sleep(100 * time.Millisecond)
+	pullRequestPayload = []byte(fmt.Sprintf(`{"commit_message":"easy-megaphone automated update"}`))
+	pullRequestURL := "https://api.github.com/repos/agilepdx/agilepdx.github.io/pulls/" + strconv.Itoa(gitHubPullRequest.RequestNumber) + "/merge"
+	log.Println("Sending payload of ", string(pullRequestPayload))
+	log.Println("Sending PUT to ", pullRequestURL)
+	req, err = http.NewRequest("PUT", pullRequestURL, bytes.NewBuffer(pullRequestPayload))
+	req.Header.Add("Authorization", "token "+s.GitHubToken)
+	resp, err = client.Do(req)
+
+	if err != nil {
+		log.Fatalln("Blew up asking github to merge a PR.")
+	}
+
+	log.Println("response from github merge put: ", resp)
 
 	// delete branch via GH API
+}
+
+func updateEventsListing(eventEntry event) {
+	// shell magicks:
+
+	// grep to remove last event
+
+	// sed to move event2 to event3
+
+	// sed to move event1 to event2
+
+	// insert eventEntry as event1
 }
