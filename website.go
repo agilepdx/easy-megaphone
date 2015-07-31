@@ -103,7 +103,6 @@ func createCommitOnBranch(eventEntry event) {
 	}
 
 	// create pull request via github API
-	log.Println("Talking to the hub of gits")
 	pullRequestPayload := []byte(fmt.Sprintf(`{"title":"easy-megaphone automated updated",
     "body" : "Automatic pull request on behalf of easy-megaphone.", "head" : "%v" , "base" : "master"}`, branchName))
 
@@ -118,8 +117,6 @@ func createCommitOnBranch(eventEntry event) {
 		log.Fatalln("Blew up asking github to make a PR.")
 	}
 
-	log.Println("response from github: ", resp)
-
 	var gitHubPullRequest githubPullRequestResponse
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -132,22 +129,24 @@ func createCommitOnBranch(eventEntry event) {
 
 	// accept PR via GH API
 	// PUT /repos/:owner/:repo/pulls/:number/merge
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond) // Was having issues with GH, this can probably be pulled.
 	pullRequestPayload = []byte(fmt.Sprintf(`{"commit_message":"easy-megaphone automated update"}`))
 	pullRequestURL := "https://api.github.com/repos/agilepdx/agilepdx.github.io/pulls/" + strconv.Itoa(gitHubPullRequest.RequestNumber) + "/merge"
-	log.Println("Sending payload of ", string(pullRequestPayload))
-	log.Println("Sending PUT to ", pullRequestURL)
 	req, err = http.NewRequest("PUT", pullRequestURL, bytes.NewBuffer(pullRequestPayload))
 	req.Header.Add("Authorization", "token "+s.GitHubToken)
 	resp, err = client.Do(req)
+	defer resp.Body.Close()
 
 	if err != nil {
 		log.Fatalln("Blew up asking github to merge a PR.")
 	}
 
-	log.Println("response from github merge put: ", resp)
-
-	// delete branch via GH API
+	// delete branch via a local push with --delete
+	cmd = "git"
+	args = []string{"push", "--delete", "origin", branchName}
+	if cmdOut, err = exec.Command(cmd, args...).Output(); err != nil {
+		log.Fatal("Couldn't run git push delete: ", os.Stderr, err, string(cmdOut))
+	}
 }
 
 func updateEventsListing(eventEntry event) {
