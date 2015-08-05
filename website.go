@@ -70,17 +70,7 @@ func createCommitOnBranch(eventEntry event) {
 	}
 
 	// update web site index.html with new event
-	updateEventsListing(eventEntry)
-	// but for testing:
-	f, err := os.OpenFile(websiteDir+"/index.html", os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModeAppend)
-	if err != nil {
-		log.Println("Couldn't open index.html: ", err)
-	}
-	_, err = f.WriteString("<!-- test -->")
-	if err != nil {
-		log.Println("Couldn't write to index.html: ", err)
-	}
-	f.Close()
+	updateEventsListing(eventEntry, websiteDir+"/index.html")
 
 	// git add, git commit -m
 	cmd = "git"
@@ -134,8 +124,10 @@ func createCommitOnBranch(eventEntry event) {
 	pullRequestURL := "https://api.github.com/repos/agilepdx/agilepdx.github.io/pulls/" + strconv.Itoa(gitHubPullRequest.RequestNumber) + "/merge"
 	req, err = http.NewRequest("PUT", pullRequestURL, bytes.NewBuffer(pullRequestPayload))
 	req.Header.Add("Authorization", "token "+s.GitHubToken)
-	resp, err = client.Do(req)
-	defer resp.Body.Close()
+
+	// commented out for ye olde debugging:
+	// resp, err = client.Do(req)
+	// defer resp.Body.Close()
 
 	if err != nil {
 		log.Fatalln("Blew up asking github to merge a PR.")
@@ -149,14 +141,49 @@ func createCommitOnBranch(eventEntry event) {
 	}
 }
 
-func updateEventsListing(eventEntry event) {
+func updateEventsListing(eventEntry event, fileLocation string) {
 	// shell magicks:
 
-	// grep to remove last event
+	// sef to remove last event:
+	// sed 's|<li id="em_event3">.*</li>||g'
+	cmd := "sed"
+	args := []string{"-i", "s|<li id=\"em_event3\">.*</li>||g", fileLocation}
+	if cmdOut, err := exec.Command(cmd, args...).Output(); err != nil {
+		log.Fatal("Couldn't run sed inline delete: ", os.Stderr, err, string(cmdOut))
+	}
 
 	// sed to move event2 to event3
+	// sed 's|<li id="em_event2">|<li id="em_event3">|g'
+	cmd = "sed"
+	args = []string{"-i", "s|<li id=\"em_event2\">|<li id=\"em_event3\">|g", fileLocation}
+	if cmdOut, err := exec.Command(cmd, args...).Output(); err != nil {
+		log.Fatal("Couldn't run sed inline move for event 2 to 3: ", os.Stderr, err, string(cmdOut))
+	}
 
 	// sed to move event1 to event2
+	// sed 's|<li id="em_event1">|<li id="em_event2">|g'
+	cmd = "sed"
+	args = []string{"-i", "s|<li id=\"em_event1\">|<li id=\"em_event2\">|g", fileLocation}
+	if cmdOut, err := exec.Command(cmd, args...).Output(); err != nil {
+		log.Fatal("Couldn't run sed inline move for event 1 to 2: ", os.Stderr, err, string(cmdOut))
+	}
 
 	// insert eventEntry as event1
+	// sed 's/.*<li id="em_event2">.*</li>/<li id="em_event1">$event_name</li>\n&/' file
+	cmd = "sed"
+	args = []string{"-i", "s/.*<li id=\"em_event2\">.*</li>/<li id=\"em_event1\">" + eventEntry.EventName + "</li>\n&/g", fileLocation}
+	if cmdOut, err := exec.Command(cmd, args...).Output(); err != nil {
+		log.Fatal("Couldn't run sed inline insert for event 1: ", os.Stderr, err, string(cmdOut))
+	}
+
+	// but for testing:
+	// f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModeAppend)
+	// if err != nil {
+	// 	log.Println("Couldn't open index.html: ", err)
+	// }
+	// _, err = f.WriteString("<!-- test -->")
+	// if err != nil {
+	// 	log.Println("Couldn't write to index.html: ", err)
+	// }
+	// f.Close()
 }
