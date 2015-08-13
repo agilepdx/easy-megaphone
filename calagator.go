@@ -23,7 +23,6 @@ func sendToCalagator(eventEntry event) {
 func getCalagatorAuthToken() (token string) {
 	// need to scrape the new events page to make a valid request:
 	// http://calagator.org/events
-	//
 	resp, err := http.Get("http://calagator.org/events/new")
 	if err != nil {
 		log.Fatalln("Couldn't read calagator web site")

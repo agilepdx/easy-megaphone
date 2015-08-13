@@ -25,6 +25,8 @@ var (
 	s              specification
 )
 
+// We may need to stuff an HTTP server in here to listen for Meetup.com's OAuth2 response.
+// Might be good to provide a web interface for enabling new events.
 func main() {
 	log.Println("Starting up easy-megaphone")
 
@@ -41,7 +43,7 @@ func main() {
 	}
 
 	// These can be refactored into a single function that calls them all
-	//sendToCalagator(eventEntry)
+	sendToCalagator(eventEntry)
 	sendToMeetup(eventEntry)
 	sendToAgilePDXWebsite(eventEntry)
 	sendToTwitter(eventEntry)
