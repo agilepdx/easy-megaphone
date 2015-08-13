@@ -150,7 +150,7 @@ func updateEventsListing(eventEntry event, fileLocation string) {
 	log.Println("Gonna sed magicks on ", fileLocation)
 	// shell magicks:
 
-	// sef to remove last event:
+	// sed to remove last event:
 	// sed 's|<li id="em_event3">.*</li>||g'
 	cmd := "sed"
 	args := []string{"-i ''", "-e", "s|<li id=\"em_event3\">.*</li>||g", fileLocation}
@@ -180,11 +180,12 @@ func updateEventsListing(eventEntry event, fileLocation string) {
 	// insert eventEntry as event1
 	// sed -i '' -e 's|<li .*em_event2.*>.*</li>|<li id="em_event1">AgilePDX Dntn Pub Lunch: Making the Business and Technical Case for Pair Programming and TDD test</li>&|g' /Users/matthewmayer/Documents/agilepdx/agilepdx.github.io/index.html
 
-	eExpression := fmt.Sprintf(`s|<li .*em_event2.*>.*</li>|<li id=\"em_event1\">` + eventEntry.EventName + `</li>&|g`)
+	eExpression := fmt.Sprintf(`s|<li .*em_event2.*>.*</li>|<li id=\"em_event1\">` + eventEntry.EventName + `</li>\
+	&|g`)
 
-	cmd = "sed" // -i '' -e " + eExpression + " " + fileLocation
+	cmd = "sed"
 	args = []string{"-i ''", "-e", eExpression, fileLocation}
-	log.Println("About to run ", cmd, args)
+	// log.Println("About to run ", cmd, args)
 	cmd2 := exec.Command(cmd, args...)
 
 	var out bytes.Buffer
@@ -195,30 +196,9 @@ func updateEventsListing(eventEntry event, fileLocation string) {
 	if err != nil {
 		log.Println("Ugh got error: ", stderr.String())
 	}
-	log.Println("out is: ", out.String())
-
-	//
-	// cmd = "sed"
-	// args = []string{"-i ''", "-e", "'s|<li id=\"em_event2\">+*</li>|<li id=\"em_event1\">" + eventEntry.EventName + "</li>&|g'", fileLocation}
-	// log.Println("Gonna pass args of ", args, "look now!")
-	// // time.Sleep(10000 * time.Millisecond)
-	// cmdOut = exec.Command(cmd, args...)
-	// var stderr bytes.Buffer
-	// cmdOut.Stderr = &stderr
-	// err := cmdOut.Run()
+	// log.Println("out is: ", out.String())
 
 	if err != nil {
 		log.Fatal("Couldn't run sed inline insert for event 1: ", err, string(cmdOut))
 	}
-
-	// but for testing:
-	// f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModeAppend)
-	// if err != nil {
-	// 	log.Println("Couldn't open index.html: ", err)
-	// }
-	// _, err = f.WriteString("<!-- test -->")
-	// if err != nil {
-	// 	log.Println("Couldn't write to index.html: ", err)
-	// }
-	// f.Close()
 }
