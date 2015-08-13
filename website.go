@@ -178,14 +178,14 @@ func updateEventsListing(eventEntry event, fileLocation string) {
 	}
 
 	// insert eventEntry as event1
-	// sed 's/.*<li id="em_event2">.*</li>/<li id="em_event1">$event_name</li>\n&/' file
+	// sed -i '' -e 's|<li .*em_event2.*>.*</li>|<li id="em_event1">AgilePDX Dntn Pub Lunch: Making the Business and Technical Case for Pair Programming and TDD test</li>&|g' /Users/matthewmayer/Documents/agilepdx/agilepdx.github.io/index.html
 
-	eExpression := fmt.Sprintf("'s|<li id=\"em_event2\">+*</li>|<li id=\"em_event1\">" + eventEntry.EventName + "</li>&|g'")
-	fmt.Println("eExpr is ", eExpression)
-	fmt.Println("fileloc is ", fileLocation)
-	cmd2 := exec.Command("sed", "-i ''", "-e "+eExpression, fileLocation)
+	eExpression := fmt.Sprintf(`s|<li .*em_event2.*>.*</li>|<li id=\"em_event1\">` + eventEntry.EventName + `</li>&|g`)
 
-	log.Println("About to run ", cmd2)
+	cmd = "sed" // -i '' -e " + eExpression + " " + fileLocation
+	args = []string{"-i ''", "-e", eExpression, fileLocation}
+	log.Println("About to run ", cmd, args)
+	cmd2 := exec.Command(cmd, args...)
 
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -194,8 +194,9 @@ func updateEventsListing(eventEntry event, fileLocation string) {
 	err = cmd2.Run()
 	if err != nil {
 		log.Println("Ugh got error: ", stderr.String())
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 	}
+	log.Println("out is: ", out.String())
+
 	//
 	// cmd = "sed"
 	// args = []string{"-i ''", "-e", "'s|<li id=\"em_event2\">+*</li>|<li id=\"em_event1\">" + eventEntry.EventName + "</li>&|g'", fileLocation}
