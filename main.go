@@ -59,10 +59,6 @@ func setup() {
 	log.Println("github token is " + s.GitHubToken)
 }
 
-func sendToMeetup(eventEntry event) {
-	log.Println("Totally sending to meetup...")
-}
-
 func sendToTwitter(eventEntry event) {
 	log.Println("Totally sending to twitter...")
 }
