@@ -18,12 +18,16 @@ Store in environment.
 
 Github integration relies on a [personal access token](https://developer.github.com/v3/oauth/).
 
-`cat ~/github-personal-access-token.sh`
+Meetup uses OAuth2 and needs a client ID and client secret.
+
+`cat ~/easy-megaphone-creds.sh`
 
 ```
 #!/bin/sh
 
 export EASYMEGAPHONE_GITHUBTOKEN="token here"
+export EASYMEGAPHONE_MEETUPCLIENTSECRET="client secret"
+export EASYMEGAPHONE_MEETUPCLIENTID="client id"
 ```
 
 ### Integrations

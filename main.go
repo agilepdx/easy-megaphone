@@ -18,8 +18,9 @@ type event struct {
 }
 
 type specification struct {
-	GitHubToken    string
-	MeetupClientID string
+	GitHubToken        string
+	MeetupClientID     string
+	MeetupClientSecret string
 }
 
 var (
@@ -58,6 +59,7 @@ func setup() {
 
 	log.Println("github token is " + s.GitHubToken)
 	log.Println("meetup client id is " + s.MeetupClientID)
+	log.Println("meetup client secret is " + s.MeetupClientSecret)
 
 	if productionMode {
 		log.Println("We're in production mode, gonna send real events.")
